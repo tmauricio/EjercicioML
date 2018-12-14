@@ -1,4 +1,7 @@
-const mutants = require('./mutantsService');
+/**
+ * 
+ */
+const mutants = require('./mutantsRoute');
 
 const routes = Application => {
     const Elements = [

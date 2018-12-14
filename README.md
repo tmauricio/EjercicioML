@@ -7,6 +7,15 @@ El ejercicio fué realizado con node.js utilizando Express para exponer servicio
 De base de datos se utilizó MongoDB la cual está instanciada en (https://mlab.com/databases/mutantes) para fines demostrativos del ejercicio.
 Los servicios estan deployados en una instancia EC2 de Amazon
 
+******************************
+** Resolucion del ejercicio **
+******************************
+El array de caracteres recibido se deja en una sola linea de caracteres concatenando todos sus elementos para facilitar su análisis.
+La búsqueda de los patrones se hace a traves de expresiones regulares, en caso de que alguna de las expresiones concuerde se marca como mutante al usuario.
+Una vez terminado el análisis se devuelve el control al usuario diciendo si es o no mutante y por detras queda corriendo la persistencia a la base de datos.
+En la base de datos no solo se persiste las cadenas de adn con su resultado sino tambien que se va calculando el ratio de mutantes para que dicho valor pueda 
+obtenerse rapidamente con el servicio /stats
+
 
 
 ****************************
