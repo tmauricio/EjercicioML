@@ -9,11 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://tobisoft@bitbucket.org/tobisoft/ejercicioml.git"
+    "url": "git+https://github.com/tmauricio/EjercicioML.git"
   },
   "author": "Tobias Mauricio",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/tobisoft/ejercicioml#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",

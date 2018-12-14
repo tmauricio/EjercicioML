@@ -10,8 +10,7 @@ const routes = Application => {
 };
 
 const sync = (Element, Application) => {
-    Object.entries(Element)
-        .forEach(item => {
+    Object.entries(Element).forEach(item => {
             const method = item[0];
             const paths = Object.entries(item[1]);
             paths.forEach(p => {

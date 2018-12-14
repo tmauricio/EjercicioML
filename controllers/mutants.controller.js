@@ -15,12 +15,14 @@ module.exports = {
      */
     isMutant: (request, response) => {
         
+        // Expresiones regulares para busqueda de patrones
         var expregA = /[A][A][A][A]|[A]\S\S\S\S\S\S[A]\S\S\S\S\S\S[A]\S\S\S\S\S\S[A]|[A]\S\S\S\S\S\S\S[A]\S\S\S\S\S\S\S[A]\S\S\S\S\S\S\S[A]/
         var expregT = /[T][T][T][T]|[T]\S\S\S\S\S\S[T]\S\S\S\S\S\S[T]\S\S\S\S\S\S[T]|[T]\S\S\S\S\S\S\S[T]\S\S\S\S\S\S\S[T]\S\S\S\S\S\S\S[T]/
         var expregC = /[C][C][C][C]|[C]\S\S\S\S\S\S[C]\S\S\S\S\S\S[C]\S\S\S\S\S\S[C]|[C]\S\S\S\S\S\S\S[C]\S\S\S\S\S\S\S[C]\S\S\S\S\S\S\S[C]/
         var expregG = /[G][G][G][G]|[G]\S\S\S\S\S\S[G]\S\S\S\S\S\S[G]\S\S\S\S\S\S[G]|[G]\S\S\S\S\S\S\S[G]\S\S\S\S\S\S\S[G]\S\S\S\S\S\S\S[G]/;
         var result = false;
         var adnString = ""; //Matris de adn pasada a un String
+        
         if (request.body.dna) {
             //Unifico matriz en un string
             request.body.dna.forEach(fila => {
@@ -37,7 +39,7 @@ module.exports = {
             }
         }
 
-        // Persisto en DB el resultado
+        // Persisto en DB el resultado asincrónicamente
         module.exports.persistirPersona(adnString, result);
         
         if (result == true) {
@@ -51,15 +53,14 @@ module.exports = {
         }
     },
 
+
     
     /**
      * Persiste el resultado del analisis en la base de datos, uno por cada mutante
      */
     persistirPersona: (adn, esMutante) => {
-        //const persona = new Persona({cadenaADN: adn, esMutante: esMutante});
-        //console.log(persona);
+        //Genera un registro nuevo solo si la cadena de adn no existe en la base de datos
         return Persona.findOneAndUpdate({cadenaADN: adn}, {cadenaADN: adn, esMutante: esMutante}, { upsert: true }).then(() => {
-            //persona.save().then(persona => {
             console.log("OK", "Persona persistida");
 
             // Calculo y persisto las estadisticas
@@ -73,12 +74,18 @@ module.exports = {
     },
 
 
+    /**
+     * Metodo que calcula y persiste las estadisticas
+     */
     actualizarEstadistica() {
+        // Cuento mutantes
         Persona.countDocuments({esMutante: true}).then(cantM => {
+            // Cuento humanos
             Persona.countDocuments({esMutante: false}).then(cantH => {
                 
                 // Busco estadisticas previas
                 Estadistica.find({}).then( estadisticas => {
+                    //Calculo Ratio
                     var ratioCalculado = 0;
                     if (cantM > 0) {
                         ratioCalculado = cantM * 100 / (cantM + cantH);
@@ -90,6 +97,7 @@ module.exports = {
                         estadistica.cantidadHumanos = cantH;
                         estadistica.ratio = ratioCalculado;
                         
+                        //Persisto estadisticas calculadas
                         Estadistica.update(estadistica).then(estadistica => {
                             console.log("OK", "Estadistica persistida");
                         }).catch(err => {
@@ -97,6 +105,7 @@ module.exports = {
                         });
                     } else {
                         const estadistica = new Estadistica({ cantidadMutantes: cantM, cantidadHumanos: cantH, ratio: ratioCalculado });
+                        //Persisto estadisticas calculadas                        
                         estadistica.save().then(estadistica => {
                             console.log("OK", "Estadistica persistida");
                         }).catch(err => {
@@ -104,15 +113,15 @@ module.exports = {
                         });
                     }
                 });
-
-
-
             });
         });
 
         
     },
 
+    /**
+     * Metodo que busca en la base de datos las estadisticas
+     */
     stats: (request, response) => {
         return Estadistica.find().then((estadisticas) => {
             if (estadisticas) {
