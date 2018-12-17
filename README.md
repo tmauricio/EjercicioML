@@ -38,6 +38,9 @@ ejemplo de request: { dna: ["asdasd", "asdasda", "asdasd", "qweasd"] }
 http://localhost:3500/stats
 
 
+IP del servidor de Amazon: http://18.223.101.59:3500
+
+
 
 
 ***********************
